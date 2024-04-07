@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema(
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
+    userType: { type: String, enum: ['public', 'private', 'admin'], default: 'public' }
   },
   { timestaps: true }
 );

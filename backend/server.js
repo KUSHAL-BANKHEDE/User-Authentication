@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const chats = require('./staticData/data');
+const authRouter = require('./routes/oauth');
+const requestRoute = require('./routes/request');
 const connectDB = require('./config/mongodb');
 const userRoutes =  require('./routes/userRoutes');
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -12,6 +14,8 @@ dotenv.config();
 connectDB();
 
 app.use(express.json());
+app.use('/oauth' , authRouter);
+app.use('/request' , requestRoute);
 app.use('/api/user',userRoutes);
 
 const __dirname1 = path.resolve();
@@ -32,6 +36,6 @@ if (process.env.NODE_ENV === "production") {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT=process.env.PORT || 8000
+const PORT=process.env.PORT || 5000
 
 app.listen(PORT, console.log(`Server started on port ${PORT}`));

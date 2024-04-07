@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 const generateToken = require('../config/generateToken')
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password, pic } = req.body;
+    const { name, email, password, pici} = req.body;
 
   if (!name || !email || !password) {
     res.status(400);
@@ -53,10 +53,7 @@ const authUser = asyncHandler(async (req, res) => {
       pic: user.pic,
       token: generateToken(user._id),
     });
-  } else {
-    res.status(401);
-    throw new Error("Invalid Email or Password");
-  }
+  }  
 });
 
 const getAllUsers = async (req, res) => {
@@ -68,4 +65,29 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, authUser, getAllUsers }
+
+const searchUser = async (req, res) => {
+  try {
+    const { query } = req.body; 
+
+   
+    if (req.user && req.user.userType === 'admin') {
+      
+      const users = await User.find({ $or: [{ name: { $regex: query, $options: 'i' } }, { email: { $regex: query, $options: 'i' } }] });
+      res.json(users);
+    } else {
+      
+      const user = await User.findById(req.user._id);
+      if (user) {
+        res.json([user]); 
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+module.exports = { registerUser, authUser, getAllUsers  , searchUser}

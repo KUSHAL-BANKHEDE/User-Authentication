@@ -1,17 +1,27 @@
-import React, { useState ,useEffect } from 'react'
-import axios from 'axios'
-import { Container,Box,Text,UnorderedList, ListItem} from '@chakra-ui/react'
-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Container, Box, Text, UnorderedList, ListItem } from '@chakra-ui/react';
+import { useHistory } from 'react-router-dom';
 
 const ListPage = () => {
-
   const [userList, setUserList] = useState([]);
-
+  const history = useHistory();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/api/user'); 
+        const token = localStorage.getItem('token');
+        if (!token) {
+          // Redirect user to login if not authenticated
+          history.push('/');
+          return;
+        }
+
+        const response = await axios.get('/api/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUserList(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error.message);
@@ -19,7 +29,7 @@ const ListPage = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [history]);
 
   return (
     <Container maxW="xl" centerContent>
@@ -33,7 +43,7 @@ const ListPage = () => {
         borderWidth="0px"
         bg="white"
       >
-        <Text fontSize="4xl" fontFamily="Work sans" >
+        <Text fontSize="4xl" fontFamily="Work sans">
           User List
         </Text>
       </Box>
@@ -48,12 +58,14 @@ const ListPage = () => {
       >
         <UnorderedList>
           {userList.map((user) => (
-            <ListItem fontSize="2xl" key={user._id}>{user.name}</ListItem>
+            <ListItem fontSize="2xl" key={user._id}>
+              {user.name}
+            </ListItem>
           ))}
         </UnorderedList>
       </Box>
     </Container>
-  )
-}
+  );
+};
 
-export default ListPage
+export default ListPage;

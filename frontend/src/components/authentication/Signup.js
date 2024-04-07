@@ -6,6 +6,7 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { Stack, Radio, RadioGroup } from "@chakra-ui/react";
 
 const Signup = () => {
   const [show, setShow] = useState(false);
@@ -13,18 +14,19 @@ const Signup = () => {
   const toast = useToast();
   const history = useHistory();
 
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [confirmpassword, setConfirmpassword] = useState();
-  const [password, setPassword] = useState();
-  const [pic, setPic] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [confirmpassword, setConfirmpassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [pic, setPic] = useState("");
   const [picLoading, setPicLoading] = useState(false);
+  const [userType, setUserType] = useState("public"); // Added userType state
 
   const submitHandler = async () => {
     setPicLoading(true);
     if (!name || !email || !password || !confirmpassword) {
       toast({
-        title: "Please Fill all the Feilds",
+        title: "Please Fill all the Fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -43,7 +45,7 @@ const Signup = () => {
       });
       return;
     }
-    console.log(name, email, password, pic);
+    console.log(name, email, password, pic, userType); // Include userType in console log
     try {
       const config = {
         headers: {
@@ -57,6 +59,7 @@ const Signup = () => {
           email,
           password,
           pic,
+          userType, // Include userType in the request body
         },
         config
       );
@@ -73,7 +76,7 @@ const Signup = () => {
       history.push("/list");
     } catch (error) {
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: error.response.data.message,
         status: "error",
         duration: 5000,
@@ -185,6 +188,13 @@ const Signup = () => {
           onChange={(e) => postDetails(e.target.files[0])}
         />
       </FormControl>
+      <RadioGroup defaultValue="public" onChange={setUserType} value={userType}>
+        <Stack spacing={4} direction="row">
+          <Radio value="public">Public</Radio>
+          <Radio value="private">Private</Radio>
+          <Radio value="admin">Admin</Radio>
+        </Stack>
+      </RadioGroup>
       <Button
         colorScheme="blue"
         width="100%"

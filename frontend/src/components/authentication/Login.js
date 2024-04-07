@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/button";
+import { Button  } from "@chakra-ui/button";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
@@ -68,7 +68,17 @@ const Login = () => {
       setLoading(false);
     }
   };
-
+  function navigate(url){
+    window.location.href = url;
+  }
+  async function auth(){
+    const response =await fetch('http://127.0.0.1:3000/request',{method:'post'});
+  
+    const data = await response.json();
+    console.log(data);
+    navigate(data.url);
+  
+  }
   return (
     <VStack spacing="10px">
       <FormControl id="email" isRequired>
@@ -95,6 +105,8 @@ const Login = () => {
             </Button>
           </InputRightElement>
         </InputGroup>
+      
+        
       </FormControl>
       <Button
         colorScheme="blue"
@@ -109,13 +121,11 @@ const Login = () => {
         variant="solid"
         colorScheme="red"
         width="100%"
-        onClick={() => {
-          setEmail("guest@example.com");
-          setPassword("123456");
-        }}
+        onClick={()=> auth()}
       >
-        Get Guest User Credentials
+        google sign in
       </Button>
+
     </VStack>
   );
 };
